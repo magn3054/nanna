@@ -1,8 +1,11 @@
 function fetchICSFile() {
-    fetch('https://login.altiplan.dk/cal/Koldingmed33212/117011hosinfo1.ics')
+    const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+    const icsUrl = 'https://login.altiplan.dk/cal/Koldingmed33212/117011hosinfo1.ics';
+
+    fetch(corsProxy + icsUrl)
         .then(response => response.text())
         .then(data => {
-            // Pass the data to the next function for parsing
+            // console.log('Fetched ICS data:', data); // For debugging
             parseICSFile(data);
         })
         .catch(error => console.error('Error fetching ICS file:', error));
@@ -10,20 +13,37 @@ function fetchICSFile() {
 
 
 function parseICSFile(icsData) {
-    var parsed = ICAL.parse(icsData);
-    var comp = new ICAL.Component(parsed);
-    var events = comp.getAllSubcomponents('VEVENT');
+    try {
+        var parsed = ICAL.parse(icsData);
+        var comp = new ICAL.Component(parsed);
+        var events = comp.getAllSubcomponents('vevent');
 
-    events.forEach(event => {
-        let startDate = event.getFirstPropertyValue('DTSTART');
-        let endDate = event.getFirstPropertyValue('DTEND');
-        let description = event.getFirstPropertyValue('DESCRIPTION');
+        events.forEach(event => {
+            let startDate = event.getFirstPropertyValue('dtstart');
+            let endDate = event.getFirstPropertyValue('dtend');
+            let description = event.getFirstPropertyValue('description');
+            let summary = event.getFirstPropertyValue('summary');
+            let uid = event.getFirstPropertyValue('uid');
 
-        console.log('Event: ', description);
-        console.log('Starting: ', description);
-        console.log('Ending: ', description);
-
-        // Apply necessary modifications here
-        // modifyEventData(event, startDate, endDate, summary);
-    });
+            if (description && description.trim().includes('bf')) {
+                console.log('UID: ', uid);
+                console.log('Summary: ', summary);
+                console.log('Event: ', description);
+                console.log('Starting: ', startDate);
+                console.log('Ending: ', endDate);
+            }
+        });
+    } catch (error) {
+        console.error('Error displaying ICS data test i upload:', error);
+    }
 }
+
+// function modifyEventData(event, startDate, endDate, description) {
+//     // Example: Correct time by adding 2 hours
+//     startDate.adjust(0, 0, 0, 2); // Adds 2 hours to the start time
+//     endDate.adjust(0, 0, 0, 2);   // Adds 2 hours to the end time
+
+//     // Update the event with the new times
+//     event.updatePropertyWithValue('dtstart', startDate);
+//     event.updatePropertyWithValue('dtend', endDate);
+// }

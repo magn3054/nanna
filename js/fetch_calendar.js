@@ -34,7 +34,7 @@ function parseICSFile(icsData) {
             }
         });
     } catch (error) {
-        console.error('Error displaying ICS data test i upload:', error);
+        console.error('Error displaying ICS data:', error);
     }
 }
 

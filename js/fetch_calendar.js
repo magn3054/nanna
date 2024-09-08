@@ -26,9 +26,11 @@ function parseICSFile(icsData) {
             let uid = event.getFirstPropertyValue('uid');
 
             if (description && !description.trim().includes('bf')) {
+                const modifiedDescription = description.replace(/\(Aendret sidst: \d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}\)/, '').trim();
+
                 console.log('UID:', uid);
                 console.log('Summary:', summary);
-                console.log('Event:', description);
+                console.log('Description:', modifiedDescription);
                 console.log('Starting:', startDate);
                 console.log('Ending:', endDate);
             }

@@ -24,6 +24,8 @@ function parseICSFile(icsData) {
             let description = event.getFirstPropertyValue('description');
             let summary = event.getFirstPropertyValue('summary');
             let uid = event.getFirstPropertyValue('uid');
+            const timeMatch = description.match(/\d{2}:\d{2} - \d{2}:\d{2}/);
+            const timeRange = timeMatch ? timeMatch[0] : 'Time not found';
 
             if (description && !description.trim().includes('bf')) {
                 const modifiedDescription = description.replace(/\(Aendret sidst: \d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}\)/, '').trim();
@@ -31,6 +33,8 @@ function parseICSFile(icsData) {
                 console.log('UID:', uid);
                 console.log('Summary:', summary);
                 console.log('Description:', modifiedDescription);
+                console.log('Time match:', timeMatch);
+                console.log('Time Range:', timeRange);
                 console.log('Starting:', startDate);
                 console.log('Ending:', endDate);
             }

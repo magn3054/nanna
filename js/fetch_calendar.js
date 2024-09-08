@@ -25,12 +25,12 @@ function parseICSFile(icsData) {
             let summary = event.getFirstPropertyValue('summary');
             let uid = event.getFirstPropertyValue('uid');
 
-            if (description && description.trim().includes('bf')) {
-                console.log('UID: ', uid);
-                console.log('Summary: ', summary);
-                console.log('Event: ', description);
-                console.log('Starting: ', startDate);
-                console.log('Ending: ', endDate);
+            if (description && !description.trim().includes('bf')) {
+                console.log('UID:', uid);
+                console.log('Summary:', summary);
+                console.log('Event:', description);
+                console.log('Starting:', startDate);
+                console.log('Ending:', endDate);
             }
         });
     } catch (error) {

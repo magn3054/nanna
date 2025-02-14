@@ -1,14 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nanna Calendar</title>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.3.0/ical.min.js"></script> <!-- Include ical.js -->
-    <script defer src="js\fetch_calendar.js"></script> <!-- Your JavaScript file -->
+    <title>Interactive Gift</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100dvh;
+            width: 100dvw;
+            background-color: #070202;
+            overflow: hidden;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        p {
+            position: absolute;
+            top: 10dvh;
+            color: #fff;
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .gift-container {
+            display: flex;
+            position: relative;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            perspective: 2000px;
+            perspective-origin: 50% 50%;
+            overflow: visible;
+        }
+
+        .gift-container:active,
+        .gift-container:focus {
+            outline: none;
+            box-shadow: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .gift:active,
+        .gift:focus {
+            outline: none;
+            box-shadow: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .gift {
+            z-index: 1;
+            width: 500px;
+            max-height: 40dvh;
+            user-select: none;
+            transition: transform 0.1s ease-in-out;
+            filter: drop-shadow(0 0 20px rgba(0, 116, 198, 0.926));
+        }
+
+        .appear {
+            position: absolute;
+            z-index: 2;
+            height: 100dvh;
+            pointer-events: none;
+            user-select: none;
+            transform: scale(0) rotateX(90deg) rotateY(0deg) rotateZ(0deg) translateX(0px) translateY(0px) translateZ(0px) skewX(0deg) skewY(0deg);
+            backface-visibility: hidden;
+            transform-origin: center;
+            transition: transform 1.5s ease-out;
+        }
+
+        @keyframes appear {
+            0% {
+                transform: rotate(15deg);
+            }
+
+            100% {
+                transform: rotate(-15deg);
+                transform-origin: center;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <button onclick="fetchICSFile()" id="fetchButton">Fetch Calendar Data</button>
-    <div>hello</div>
+    <div class="gift-container" onclick="shakeGift()">
+        <img src="img/giftclosed.svg" alt="Gift Box" class="gift" id="giftBox">
+        <img src="img/gave.png" alt="Surprise" class="appear" id="surprise">
+    </div>
+
+    <script>
+        let clickCount = 0;
+        let lastClickTime = 0;
+        let isGiftOpened = false;
+        let isShaking = false;  // Flag to prevent new shake while the gift is shaking
+        let giftBox = document.getElementById('giftBox');
+        let surprise = document.getElementById('surprise');
+        let HG = new Audio('img/hungergames.mp3');
+        let congrats = new Audio('img/congrats.mp3');
+
+        window.onload = function () {
+            // congrats.play();
+        };
+
+        function shakeGift() {
+            if (isGiftOpened || isShaking) return;  // Prevent shaking if gift is opened or shaking is in progress
+
+            let currentTime = new Date().getTime();
+            if (currentTime - lastClickTime > 4000) {
+                clickCount = 0;
+            }
+            lastClickTime = currentTime;
+            clickCount++;
+
+            isShaking = true;  // Set shaking flag
+
+            let angle = 10;
+            let direction = 1;
+
+            // Shake effect
+            let shakeInterval = setInterval(() => {
+                giftBox.style.transform = `rotate(${direction * angle}deg)`;
+                direction *= -1;
+            }, 100);
+
+            setTimeout(() => {
+                clearInterval(shakeInterval);
+                giftBox.style.transform = 'rotate(0deg)';
+                isShaking = false;  // Reset shaking flag after animation finishes
+            }, 500);
+    
+            // Change gift image to open just before the surprise is shown
+            if (clickCount >= 4) {
+                HG.play();
+                giftBox.src = 'img/giftopen.svg'; // Change to opened gift image
+                clearInterval(shakeInterval);
+
+                setTimeout(() => {
+                    surprise.style.transform = 'scale(1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) translateX(0px) translateY(0px) translateZ(0px) skewX(0deg) skewY(0deg)';
+
+                    setTimeout(() => {
+                        HG.pause();
+                    }, 4500);
+                }, 1000); // Change 2 seconds before showing surprise
+
+            } else {
+                setTimeout(() => {
+                    if (new Date().getTime() - lastClickTime > 4000) {
+                        resetGift();
+                    }
+                }, 4000);
+            }
+        }
+
+        function resetGift() {
+            if (isGiftOpened) return;
+            clickCount = 0;
+        }
+    </script>
 </body>
+
 </html>
